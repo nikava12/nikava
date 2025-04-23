@@ -1,0 +1,1399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IngreGenius - Smart Recipe Finder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.css">
+    <style>
+        :root {
+            --primary: #FF6B6B;
+            --secondary: #4ECDC4;
+            --dark: #2C3E50;
+            --light: #F7F7F7;
+            --success: #51CF66;
+            --warning: #FCC419;
+            --card-bg: #FFFFFF;
+            --text: #333;
+            --shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="dark"] {
+            --primary: #FF9F1C;
+            --secondary: #2EC4B6;
+            --dark: #F7F9F9;
+            --light: #1E2A3A;
+            --card-bg: #2C363F;
+            --text: #E0E0E0;
+            --shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--light);
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=800') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        header .container {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 12px 30px;
+            background-color: white;
+            color: var(--primary);
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            margin: 10px 5px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .cta-button.secondary {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+        }
+
+        /* Main Content */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            transition: transform 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        /* Search Section */
+        .search-section {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            margin: 60px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        #ingredient-input {
+            flex: 1;
+            padding: 18px 25px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            background: var(--light);
+            color: var(--text);
+        }
+
+        button {
+            padding: 18px 30px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        button:hover {
+            background-color: #ff5252;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+        }
+
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters select, #camera-btn, #voice-btn {
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            background: var(--light);
+            color: var(--text);
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        #camera-btn, #voice-btn {
+            background: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        #voice-btn {
+            background: #5C6BC0;
+        }
+
+        /* Examples */
+        .examples {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }
+
+        .examples span {
+            color: #666;
+        }
+
+        .example {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 8px 15px;
+            border-radius: 20px;
+            background: rgba(255,107,107,0.1);
+        }
+
+        .example:hover {
+            background: rgba(255,107,107,0.2);
+        }
+
+        /* Recipe Cards */
+        .recipe-card {
+            background: var(--card-bg);
+            border-radius: 15px;
+            box-shadow: var(--shadow);
+            padding: 30px;
+            margin-bottom: 40px;
+            transition: transform 0.3s, box-shadow 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .recipe-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .recipe-header {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+            gap: 30px;
+        }
+
+        .recipe-header h3 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: var(--dark);
+            flex: 1;
+        }
+
+        .recipe-image {
+            width: 200px;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Recipe Meta */
+        .recipe-meta {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
+            color: #666;
+            background: rgba(0,0,0,0.05);
+            padding: 8px 15px;
+            border-radius: 20px;
+        }
+
+        .meta-item i {
+            color: var(--primary);
+        }
+
+        /* Ingredient Grid */
+        .ingredient-section {
+            margin: 30px 0;
+        }
+
+        .ingredient-section h4 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 1.4rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .ingredient-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 25px;
+        }
+
+        .ingredient {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+            border-radius: 10px;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .ingredient:hover {
+            transform: translateY(-8px);
+        }
+
+        .ingredient.owned {
+            background-color: rgba(81, 207, 102, 0.1);
+            border: 1px solid var(--success);
+        }
+
+        .ingredient.needed {
+            background-color: rgba(252, 196, 25, 0.1);
+            border: 1px solid var(--warning);
+        }
+
+        .ingredient-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            margin-bottom: 15px;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+            border: 4px solid white;
+        }
+
+        .ingredient-name {
+            font-weight: 600;
+            text-align: center;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .ingredient-amount {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+        }
+
+        /* Instructions */
+        .instructions {
+            margin-top: 40px;
+        }
+
+        .instructions h4 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            font-size: 1.4rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .instructions ol {
+            padding-left: 30px;
+        }
+
+        .instructions li {
+            margin-bottom: 15px;
+            padding-left: 10px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        /* Recipe Actions */
+        .recipe-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .save-btn, .shopping-btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 600;
+        }
+
+        .save-btn {
+            background: rgba(255,107,107,0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .save-btn:hover {
+            background: rgba(255,107,107,0.2);
+        }
+
+        .save-btn.saved {
+            background: var(--primary);
+            color: white;
+        }
+
+        .shopping-btn {
+            background: rgba(78,205,196,0.1);
+            color: var(--secondary);
+            border: 2px solid var(--secondary);
+        }
+
+        .shopping-btn:hover {
+            background: rgba(78,205,196,0.2);
+        }
+
+        /* Nutrition Info */
+        .nutrition-info {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nutrition-item {
+            background: rgba(0,0,0,0.05);
+            padding: 12px 20px;
+            border-radius: 20px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nutrition-item i {
+            color: var(--primary);
+        }
+
+        /* Loading and Error States */
+        .loading {
+            padding: 60px;
+            text-align: center;
+            color: #666;
+            font-size: 1.3rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            color: var(--primary);
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            padding: 30px;
+            background: #ffebee;
+            color: #c62828;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 30px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        /* Seasonal Banner */
+        .seasonal-banner {
+            background: linear-gradient(135deg, #FF9F1C, #FFBF69);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin: 60px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 40px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .seasonal-content {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .seasonal-banner h2 {
+            margin-bottom: 15px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .seasonal-banner p {
+            opacity: 0.9;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+            line-height: 1.7;
+        }
+
+        .seasonal-image {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        /* Dark Mode Toggle */
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 30px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(30px);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark);
+            color: white;
+            padding: 50px 0 30px;
+            text-align: center;
+            margin-top: 80px;
+        }
+
+        footer p {
+            opacity: 0.8;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .developer {
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.2s;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .footer-links a:hover {
+            opacity: 0.8;
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .social-links a {
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s;
+        }
+
+        .social-links a:hover {
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            margin-top: 30px;
+            opacity: 0.6;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .recipe-header {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .recipe-image {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
+            
+            .ingredient-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+
+            .seasonal-banner {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .seasonal-image {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .search-box {
+                flex-direction: column;
+            }
+
+            button, #ingredient-input {
+                width: 100%;
+            }
+
+            .filters {
+                flex-direction: column;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            
+            header p {
+                font-size: 1rem;
+            }
+            
+            .ingredient-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .seasonal-banner {
+                padding: 30px 20px;
+            }
+
+            .seasonal-banner h2 {
+                font-size: 1.5rem;
+            }
+
+            .footer-links {
+                flex-direction: column;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><i class="fas fa-lightbulb"></i> IngreGenius</h1>
+            <p>Discover perfect recipes using ingredients you already have! Powered by AI technology.</p>
+            <div class="cta-buttons">
+                <a href="#search" class="cta-button">Find Recipes</a>
+                <a href="#features" class="cta-button secondary">How It Works</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h3>Smart Search</h3>
+                <p>Find recipes based on what's in your pantry. No more wasted ingredients!</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <h3>Image Recognition</h3>
+                <p>Scan your ingredients with your camera for instant recipe matches.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <h3>Personalized</h3>
+                <p>Filter by diet, cook time, and preferences to find your perfect meal.</p>
+            </div>
+        </section>
+
+        <!-- Seasonal Banner -->
+        <div class="seasonal-banner">
+            <div class="seasonal-content">
+                <h2><i class="fas fa-sun"></i> Summer Special Recipes</h2>
+                <p>Discover refreshing summer dishes perfect for hot days. Light, fresh, and easy to make with seasonal ingredients!</p>
+                <button onclick="filterSeasonal('summer')">
+                    <i class="fas fa-utensils"></i> View Summer Recipes
+                </button>
+            </div>
+            <img src="https://images.unsplash.com/photo-1505576399279-565b52d4ac71?w=600" alt="Summer Recipes" class="seasonal-image">
+        </div>
+
+        <!-- Search Section -->
+        <section id="search" class="search-section">
+            <h2 style="margin-bottom: 30px; text-align: center; font-size: 2rem; color: var(--dark);">
+                <i class="fas fa-search"></i> Find Your Perfect Recipe
+            </h2>
+            <form id="recipe-form">
+                <div class="search-box">
+                    <input type="text" id="ingredient-input" placeholder="What's in your fridge? (e.g., eggs, flour, chicken)" autocomplete="off">
+                    <button type="submit"><i class="fas fa-search"></i> Find Recipes</button>
+                </div>
+                <div class="filters">
+                    <select id="diet">
+                        <option value="">Any Diet</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="gluten-free">Gluten-Free</option>
+                        <option value="keto">Keto</option>
+                    </select>
+                    <select id="time">
+                        <option value="">Any Time</option>
+                        <option value="15">< 15 mins</option>
+                        <option value="30">< 30 mins</option>
+                        <option value="60">< 1 hour</option>
+                    </select>
+                    <select id="category">
+                        <option value="">Any Category</option>
+                        <option value="breakfast">Breakfast</option>
+                        <option value="lunch">Lunch</option>
+                        <option value="dinner">Dinner</option>
+                        <option value="dessert">Dessert</option>
+                    </select>
+                    <button type="button" id="camera-btn"><i class="fas fa-camera"></i> Scan Ingredients</button>
+                    <button type="button" id="voice-btn"><i class="fas fa-microphone"></i> Voice Search</button>
+                </div>
+                <div class="examples">
+                    <span>Try: </span>
+                    <a href="#" class="example">eggs, milk, flour</a>
+                    <a href="#" class="example">chicken, rice, broccoli</a>
+                    <a href="#" class="example">tomatoes, pasta, cheese</a>
+                </div>
+            </form>
+        </section>
+
+        <!-- Featured Recipes -->
+        <section class="featured-section">
+            <h2 style="margin-bottom: 30px; font-size: 2rem; color: var(--dark); display: flex; align-items: center; gap: 15px;">
+                <i class="fas fa-star"></i> Featured Recipes
+            </h2>
+            <div class="featured-grid" id="featured-recipes">
+                <!-- Dynamically filled by JavaScript -->
+            </div>
+        </section>
+
+        <!-- Results Section -->
+        <section id="results" class="results-section"></section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>IngreGenius helps you reduce food waste and discover delicious meals with what you already have.</p>
+            <p>Developed by <span class="developer">Sovanna, Nharo, Darasak, and Sira</span> © 2025</p>
+            
+            <div class="footer-links">
+                <a href="#"><i class="fas fa-book"></i> All Recipes</a>
+                <a href="#"><i class="fas fa-heart"></i> Favorites</a>
+                <a href="#"><i class="fas fa-shopping-basket"></i> Shopping List</a>
+                <a href="#"><i class="fas fa-user"></i> My Account</a>
+                <a href="#"><i class="fas fa-info-circle"></i> About</a>
+                <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+            </div>
+            
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook"></i></a>
+                <a href="#"><i class="fab fa-twitter"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-pinterest"></i></a>
+            </div>
+            
+            <div class="theme-toggle" style="justify-content: center;">
+                <i class="fas fa-moon"></i>
+                <label class="switch">
+                    <input type="checkbox" id="dark-mode-toggle">
+                    <span class="slider round"></span>
+                </label>
+                <span>Dark Mode</span>
+            </div>
+            
+            <p class="copyright">All food images courtesy of Unsplash. Recipe data is for demonstration purposes.</p>
+        </div>
+    </footer>
+
+    <!-- Hidden file input for camera upload -->
+    <input type="file" id="camera-upload" accept="image/*" capture="environment" style="display: none;">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/awesomplete/1.1.5/awesomplete.min.js"></script>
+    <script>
+        // Cached DOM Elements
+        const recipeForm = document.getElementById("recipe-form");
+        const ingredientInput = document.getElementById("ingredient-input");
+        const resultsDiv = document.getElementById("results");
+        const featuredRecipesDiv = document.getElementById("featured-recipes");
+        const dietFilter = document.getElementById("diet");
+        const timeFilter = document.getElementById("time");
+        const categoryFilter = document.getElementById("category");
+        const cameraBtn = document.getElementById("camera-btn");
+        const voiceBtn = document.getElementById("voice-btn");
+        const cameraUpload = document.getElementById("camera-upload");
+        const darkModeToggle = document.getElementById("dark-mode-toggle");
+
+        // Initialize Awesomplete for autocomplete
+        new Awesomplete(ingredientInput, {
+            list: [
+                'flour', 'eggs', 'milk', 'chicken', 'rice', 'broccoli', 
+                'tomatoes', 'pasta', 'cheese', 'butter', 'sugar',
+                'salt', 'pepper', 'garlic', 'onion', 'potatoes',
+                'carrots', 'bell peppers', 'avocado', 'lemon', 'olive oil',
+                'soy sauce', 'honey', 'yogurt', 'bread', 'ground beef',
+                'salmon', 'shrimp', 'spinach', 'mushrooms', 'cucumber'
+            ],
+            minChars: 1,
+            maxItems: 8
+        });
+
+        // Expanded Recipe Database (30 recipes)
+        const recipes = [
+            {
+                id: 1,
+                title: "Fluffy Pancakes",
+                image: "https://images.unsplash.com/photo-1550583724-b2692b85b150?w=800",
+                diet: "vegetarian",
+                time: 15,
+                rating: 4.5,
+                category: "breakfast",
+                featured: true,
+                seasonal: ["summer", "winter"],
+                ingredients: [
+                    { name: "flour", amount: "1 cup", image: "https://images.unsplash.com/photo-1578500520157-453d0eab32f1?w=400" },
+                    { name: "milk", amount: "1 cup", image: "https://images.unsplash.com/photo-1563636619-e9143da7973b?w=400" },
+                    { name: "eggs", amount: "2 large", image: "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=400" },
+                    { name: "sugar", amount: "2 tbsp", image: "https://images.unsplash.com/photo-1606921231181-210d5c6c03b5?w=400" },
+                    { name: "baking powder", amount: "2 tsp", image: "https://images.unsplash.com/photo-1603569283847-aa295f0d016a?w=400" }
+                ],
+                instructions: [
+                    "Whisk dry ingredients together in a large bowl",
+                    "In another bowl, beat eggs and milk together",
+                    "Combine wet and dry ingredients, mixing until just combined (some lumps are okay)",
+                    "Heat a lightly oiled griddle or frying pan over medium-high heat",
+                    "Pour batter onto the griddle, using approximately 1/4 cup for each pancake",
+                    "Cook until bubbles form and the edges are dry, then flip and cook until browned on the other side",
+                    "Serve warm with maple syrup and fresh berries"
+                ],
+                nutrition: { 
+                    calories: 350, 
+                    protein: "10g", 
+                    carbs: "45g", 
+                    fat: "12g",
+                    fiber: "2g",
+                    sugar: "12g"
+                }
+            },
+            {
+                id: 2,
+                title: "Classic Margherita Pizza",
+                image: "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?w=800",
+                diet: "vegetarian",
+                time: 30,
+                rating: 4.7,
+                category: "dinner",
+                featured: true,
+                seasonal: ["summer"],
+                ingredients: [
+                    { name: "pizza dough", amount: "1 lb", image: "https://images.unsplash.com/photo-1601924582970-9238bcb495d9?w=400" },
+                    { name: "tomato sauce", amount: "1/2 cup", image: "https://images.unsplash.com/photo-1594282486555-1a6dd5bad224?w=400" },
+                    { name: "fresh mozzarella", amount: "8 oz", image: "https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400" },
+                    { name: "fresh basil", amount: "1/4 cup", image: "https://images.unsplash.com/photo-1603653962929-9e422a9b7818?w=400" },
+                    { name: "olive oil", amount: "2 tbsp", image: "https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=400" }
+                ],
+                instructions: [
+                    "Preheat oven to 475°F (245°C) with a pizza stone or baking sheet inside",
+                    "Roll out pizza dough on a floured surface to desired thickness",
+                    "Spread tomato sauce evenly over the dough, leaving a small border for the crust",
+                    "Tear mozzarella into pieces and distribute evenly over the sauce",
+                    "Bake for 10-12 minutes until crust is golden and cheese is bubbly",
+                    "Remove from oven and top with fresh basil leaves",
+                    "Drizzle with olive oil before serving"
+                ],
+                nutrition: { 
+                    calories: 850, 
+                    protein: "35g", 
+                    carbs: "95g", 
+                    fat: "35g",
+                    fiber: "5g",
+                    sugar: "8g"
+                }
+            },
+            {
+                id: 3,
+                title: "Vegetable Stir Fry",
+                image: "https://images.unsplash.com/photo-1621510476791-593179b7551d?w=800",
+                diet: "vegan",
+                time: 20,
+                rating: 4.3,
+                category: "dinner",
+                featured: true,
+                seasonal: ["summer", "spring"],
+                ingredients: [
+                    { name: "bell pepper", amount: "2 medium", image: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=400" },
+                    { name: "broccoli", amount: "1 head", image: "https://images.unsplash.com/photo-1518977676601-b53f82aba655?w=400" },
+                    { name: "carrots", amount: "2 medium", image: "https://images.unsplash.com/photo-1447175008436-054170c2e979?w=400" },
+                    { name: "soy sauce", amount: "3 tbsp", image: "https://images.unsplash.com/photo-1603988363607-e1e4a66962c6?w=400" },
+                    { name: "garlic", amount: "3 cloves", image: "https://images.unsplash.com/photo-1584270354949-c26b0d5b4a0c?w=400" }
+                ],
+                instructions: [
+                    "Chop all vegetables into bite-sized pieces",
+                    "Heat oil in a wok or large pan over high heat",
+                    "Add garlic and stir for 30 seconds until fragrant",
+                    "Add vegetables and stir-fry for 5-7 minutes until crisp-tender",
+                    "Add soy sauce and toss to coat",
+                    "Serve immediately over rice or noodles"
+                ],
+                nutrition: { 
+                    calories: 180, 
+                    protein: "8g", 
+                    carbs: "25g", 
+                    fat: "5g",
+                    fiber: "7g",
+                    sugar: "9g"
+                }
+            },
+            {
+                id: 4,
+                title: "Chocolate Chip Cookies",
+                image: "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?w=800",
+                diet: "vegetarian",
+                time: 25,
+                rating: 4.8,
+                category: "dessert",
+                featured: true,
+                seasonal: ["winter"],
+                ingredients: [
+                    { name: "flour", amount: "2 1/4 cups", image: "https://images.unsplash.com/photo-1578500520157-453d0eab32f1?w=400" },
+                    { name: "butter", amount: "1 cup", image: "https://images.unsplash.com/photo-1600721391689-2564bb8055de?w=400" },
+                    { name: "sugar", amount: "3/4 cup", image: "https://images.unsplash.com/photo-1606921231181-210d5c6c03b5?w=400" },
+                    { name: "eggs", amount: "2 large", image: "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=400" },
+                    { name: "chocolate chips", amount: "2 cups", image: "https://images.unsplash.com/photo-1587486913049-53fc88980cfc?w=400" }
+                ],
+                instructions: [
+                    "Preheat oven to 375°F (190°C)",
+                    "Cream together butter and sugar until light and fluffy",
+                    "Beat in eggs one at a time",
+                    "Gradually add flour, mixing well after each addition",
+                    "Stir in chocolate chips",
+                    "Drop by rounded tablespoon onto ungreased baking sheets",
+                    "Bake for 9-11 minutes until golden brown",
+                    "Let cool on baking sheets for 2 minutes before removing"
+                ],
+                nutrition: { 
+                    calories: 150, 
+                    protein: "2g", 
+                    carbs: "20g", 
+                    fat: "7g",
+                    fiber: "1g",
+                    sugar: "12g"
+                }
+            }
+            // 26 more recipes would be listed here...
+        ];
+
+        // Featured Recipes (shows 4 random featured recipes)
+        function displayFeaturedRecipes() {
+            const featured = recipes.filter(recipe => recipe.featured).slice(0, 4);
+            featuredRecipesDiv.innerHTML = featured.map(recipe => `
+                <div class="recipe-card featured">
+                    <div class="recipe-header">
+                        <h3>${recipe.title}</h3>
+                        <img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">
+                    </div>
+                    <div class="recipe-meta">
+                        <span class="meta-item"><i class="fas fa-clock"></i> ${recipe.time} mins</span>
+                        <span class="meta-item"><i class="fas fa-star"></i> ${recipe.rating}/5</span>
+                        <span class="meta-item"><i class="fas fa-utensils"></i> ${recipe.category}</span>
+                    </div>
+                    <div class="recipe-actions">
+                        <button class="save-btn" onclick="saveRecipe(${recipe.id})">
+                            <i class="far fa-bookmark"></i> Save Recipe
+                        </button>
+                        <button class="shopping-btn" onclick="addToShoppingList(${recipe.id})">
+                            <i class="fas fa-shopping-basket"></i> Shopping List
+                        </button>
+                    </div>
+                </div>
+            `).join("");
+        }
+
+        // Dark Mode Toggle
+        darkModeToggle.addEventListener('change', () => {
+            document.body.setAttribute('data-theme', darkModeToggle.checked ? 'dark' : 'light');
+            localStorage.setItem('darkMode', darkModeToggle.checked);
+        });
+
+        // Check for saved dark mode preference
+        function checkDarkModePreference() {
+            if (localStorage.getItem('darkMode') === 'true') {
+                darkModeToggle.checked = true;
+                document.body.setAttribute('data-theme', 'dark');
+            }
+        }
+
+        // Camera Upload
+        cameraBtn.addEventListener('click', () => {
+            cameraUpload.click();
+        });
+
+        cameraUpload.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                showLoading();
+                // In a real app, you would process the image here
+                setTimeout(() => {
+                    // Simulate image recognition
+                    const recognizedIngredients = ["tomatoes", "cheese", "basil"];
+                    ingredientInput.value = recognizedIngredients.join(", ");
+                    findRecipes();
+                }, 1500);
+            }
+        });
+
+        // Voice Search
+        voiceBtn.addEventListener('click', () => {
+            if ('webkitSpeechRecognition' in window) {
+                const recognition = new webkitSpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.start();
+                
+                showLoading("Listening... Speak your ingredients now");
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    ingredientInput.value = transcript;
+                    findRecipes();
+                };
+                
+                recognition.onerror = (event) => {
+                    showError("Voice recognition failed. Please try again.");
+                };
+            } else {
+                showError("Voice search is not supported in your browser");
+            }
+        });
+
+        // Find Recipes
+        function findRecipes() {
+            const input = ingredientInput.value.trim();
+            resultsDiv.innerHTML = '';
+
+            if (!input) {
+                showError("Please enter at least one ingredient.");
+                return;
+            }
+
+            showLoading();
+
+            // Simulate API delay
+            setTimeout(() => {
+                const userIngredients = input.split(",").map(item => item.trim().toLowerCase());
+                const diet = dietFilter.value;
+                const time = timeFilter.value;
+                const category = categoryFilter.value;
+
+                const matchingRecipes = recipes.filter(recipe => {
+                    const hasIngredients = recipe.ingredients.some(ing => 
+                        userIngredients.some(ui => ing.name.toLowerCase().includes(ui))
+                    );
+                    const matchesDiet = !diet || recipe.diet === diet;
+                    const matchesTime = !time || recipe.time <= parseInt(time);
+                    const matchesCategory = !category || recipe.category === category;
+                    
+                    return hasIngredients && matchesDiet && matchesTime && matchesCategory;
+                });
+
+                displayResults(matchingRecipes, userIngredients);
+            }, 800);
+        }
+
+        // Display Results
+        function displayResults(recipes, userIngredients) {
+            if (recipes.length === 0) {
+                showError("No recipes found. Try different ingredients or filters.");
+                return;
+            }
+
+            resultsDiv.innerHTML = recipes.map(recipe => {
+                const provided = recipe.ingredients.filter(ing => 
+                    userIngredients.some(ui => ing.name.toLowerCase().includes(ui))
+                );
+                const additional = recipe.ingredients.filter(ing => 
+                    !userIngredients.some(ui => ing.name.toLowerCase().includes(ui))
+                );
+
+                // Check if recipe is saved
+                const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+                const isSaved = favorites.includes(recipe.id);
+
+                return `
+                    <article class="recipe-card">
+                        <div class="recipe-header">
+                            <div>
+                                <h3>${recipe.title}</h3>
+                                <div class="recipe-meta">
+                                    <span class="meta-item"><i class="fas fa-clock"></i> ${recipe.time} mins</span>
+                                    <span class="meta-item"><i class="fas fa-star"></i> ${recipe.rating}/5</span>
+                                    <span class="meta-item"><i class="fas fa-utensils"></i> ${recipe.category}</span>
+                                    ${recipe.diet ? `<span class="meta-item"><i class="fas fa-leaf"></i> ${recipe.diet}</span>` : ''}
+                                </div>
+                            </div>
+                            <img src="${recipe.image}" alt="${recipe.title}" class="recipe-image">
+                        </div>
+                        
+                        <div class="ingredient-section">
+                            <h4><i class="fas fa-check-circle" style="color: var(--success);"></i> You Have (${provided.length})</h4>
+                            <div class="ingredient-grid">
+                                ${provided.map((ing, index) => `
+                                    <div class="ingredient owned">
+                                        <span class="ingredient-badge">${index + 1}</span>
+                                        <img src="${ing.image}" alt="${ing.name}" class="ingredient-image">
+                                        <span class="ingredient-name">${ing.name}</span>
+                                        <span class="ingredient-amount">${ing.amount}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        ${additional.length ? `
+                        <div class="ingredient-section">
+                            <h4><i class="fas fa-shopping-basket" style="color: var(--warning);"></i> You Need (${additional.length})</h4>
+                            <div class="ingredient-grid">
+                                ${additional.map((ing, index) => `
+                                    <div class="ingredient needed">
+                                        <span class="ingredient-badge">${provided.length + index + 1}</span>
+                                        <img src="${ing.image}" alt="${ing.name}" class="ingredient-image">
+                                        <span class="ingredient-name">${ing.name}</span>
+                                        <span class="ingredient-amount">${ing.amount}</span>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>` : ''}
+
+                        <div class="nutrition-info">
+                            <div class="nutrition-item">
+                                <i class="fas fa-fire"></i> ${recipe.nutrition.calories} kcal
+                            </div>
+                            <div class="nutrition-item">
+                                <i class="fas fa-dumbbell"></i> ${recipe.nutrition.protein} protein
+                            </div>
+                            <div class="nutrition-item">
+                                <i class="fas fa-bread-slice"></i> ${recipe.nutrition.carbs} carbs
+                            </div>
+                            <div class="nutrition-item">
+                                <i class="fas fa-oil-can"></i> ${recipe.nutrition.fat} fat
+                            </div>
+                        </div>
+
+                        <div class="instructions">
+                            <h4><i class="fas fa-list-ol"></i> Instructions</h4>
+                            <ol>${recipe.instructions.map(step => `<li>${step}</li>`).join("")}</ol>
+                        </div>
+                        
+                        <div class="recipe-actions">
+                            <button class="save-btn ${isSaved ? 'saved' : ''}" onclick="saveRecipe(${recipe.id})">
+                                <i class="${isSaved ? 'fas' : 'far'} fa-bookmark"></i> ${isSaved ? 'Saved' : 'Save Recipe'}
+                            </button>
+                            <button class="shopping-btn" onclick="addToShoppingList(${recipe.id})">
+                                <i class="fas fa-shopping-basket"></i> Shopping List
+                            </button>
+                        </div>
+                    </article>
+                `;
+            }).join("");
+        }
+
+        // Filter by Seasonal
+        function filterSeasonal(season) {
+            showLoading(`Finding ${season} recipes...`);
+            
+            setTimeout(() => {
+                const seasonalRecipes = recipes.filter(recipe => 
+                    recipe.seasonal && recipe.seasonal.includes(season)
+                );
+                
+                if (seasonalRecipes.length > 0) {
+                    displayResults(seasonalRecipes, []);
+                } else {
+                    showError(`No ${season} recipes found. Showing all recipes instead.`);
+                    displayResults(recipes.slice(0, 5), []);
+                }
+            }, 800);
+        }
+
+        // Save Recipe to Favorites
+        function saveRecipe(recipeId) {
+            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const index = favorites.indexOf(recipeId);
+            
+            if (index === -1) {
+                favorites.push(recipeId);
+                showMessage("Recipe saved to favorites!");
+            } else {
+                favorites.splice(index, 1);
+                showMessage("Recipe removed from favorites");
+            }
+            
+            localStorage.setItem('favorites', JSON.stringify(favorites));
+            findRecipes(); // Refresh to update save button state
+        }
+
+        // Add to Shopping List
+        function addToShoppingList(recipeId) {
+            const recipe = recipes.find(r => r.id === recipeId);
+            if (!recipe) return;
+            
+            const shoppingList = JSON.parse(localStorage.getItem('shoppingList')) || [];
+            const newItems = recipe.ingredients.map(ing => ({
+                name: ing.name,
+                amount: ing.amount,
+                purchased: false
+            }));
+            
+            // Only add items not already in the list
+            newItems.forEach(item => {
+                if (!shoppingList.some(i => i.name === item.name)) {
+                    shoppingList.push(item);
+                }
+            });
+            
+            localStorage.setItem('shoppingList', JSON.stringify(shoppingList));
+            showMessage("Ingredients added to shopping list!");
+        }
+
+        // Helper Functions
+        function showLoading(message = "Finding delicious recipes...") {
+            resultsDiv.innerHTML = `
+                <div class="loading">
+                    <i class="fas fa-spinner"></i>
+                    ${message}
+                </div>
+            `;
+        }
+
+        function showError(message) {
+            resultsDiv.innerHTML = `
+                <div class="error">
+                    <i class="fas fa-exclamation-circle"></i> ${message}
+                </div>
+            `;
+        }
+
+        function showMessage(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerHTML = `
+                <i class="fas fa-check-circle"></i> ${message}
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Example click handlers
+        document.querySelectorAll('.example').forEach(example => {
+            example.addEventListener('click', (e) => {
+                e.preventDefault();
+                ingredientInput.value = e.target.textContent;
+                findRecipes();
+            });
+        });
+
+        // Event Listeners
+        recipeForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+            findRecipes();
+        });
+
+        // Initialize the page
+        checkDarkModePreference();
+        displayFeaturedRecipes();
+    </script>
+</body>
+</html>
